@@ -13,6 +13,8 @@ class CourseController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Course::class);
+
         $courses = Course::with('academy')->get();
 
         return response()->json($courses, 200);
@@ -34,14 +36,7 @@ class CourseController extends Controller
 
         $academy = Academy::findOrFail($validated['academy_id']);
 
-        if (
-            $academy->user_id !== $request->user()->id &&
-            !$request->user()->isAdmin()
-        ) {
-            return response()->json([
-                'message' => 'You are not authorized to create courses in this academy.',
-            ], 403);
-        }
+        $this->authorize('create', [Course::class, $academy]);
 
         // El academy_id se asigna mediante la relación.
         unset($validated['academy_id']);
@@ -59,6 +54,8 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
+        $this->authorize('view', $course);
+
         $course->load('academy');
 
         return response()->json($course, 200);
@@ -69,14 +66,7 @@ class CourseController extends Controller
      */
     public function update(Request $request, Course $course)
     {
-        if (
-            $course->academy->user_id !== $request->user()->id &&
-            !$request->user()->isAdmin()
-        ) {
-            return response()->json([
-                'message' => 'You are not authorized to modify this course.',
-            ], 403);
-        }
+        $this->authorize('update', $course);
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
@@ -113,16 +103,9 @@ class CourseController extends Controller
     /**
      * Eliminar un curso.
      */
-    public function destroy(Request $request, Course $course)
+    public function destroy(Course $course)
     {
-        if (
-            $course->academy->user_id !== $request->user()->id &&
-            !$request->user()->isAdmin()
-        ) {
-            return response()->json([
-                'message' => 'You are not authorized to delete this course.',
-            ], 403);
-        }
+        $this->authorize('delete', $course);
 
         // Evitamos eliminar matrículas accidentalmente.
         if ($course->students()->exists()) {
