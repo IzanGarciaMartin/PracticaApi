@@ -50,4 +50,10 @@ class CoursePolicy
         return $user->id === $course->academy->user_id
             || $user->isAdmin();
     }
+
+    public function viewStudents(User $user, Course $course): bool
+    {
+        return $user->id === $course->academy->user_id
+            || $user->isAdmin();
+    }
 }

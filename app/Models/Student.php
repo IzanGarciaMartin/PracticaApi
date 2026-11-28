@@ -24,4 +24,8 @@ class Student extends Model
             ->withPivot('enrolled_at')
             ->withTimestamps();
     }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

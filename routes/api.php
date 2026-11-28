@@ -4,10 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AcademyController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\StudentController;
 
 // Rutas públicas
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
 Route::get(
     '/academy/{academy}/courses',
     [CourseController::class, 'academyCourses']
@@ -22,7 +24,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // Gestión de academias
     Route::apiResource('academies', AcademyController::class);
 
-    //Gestión de cursos
+    // Gestión de cursos
     Route::apiResource('courses', CourseController::class);
 
+    // Gestión de estudiantes
+    Route::apiResource('students', StudentController::class);
+
+    // Consultar estudiantes de un curso
+    Route::get(
+        '/course/{course}/students',
+        [CourseController::class, 'students']
+    );
 });

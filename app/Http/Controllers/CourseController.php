@@ -128,4 +128,16 @@ class CourseController extends Controller
 
         return response()->json($courses, 200);
     }
+
+    /**
+     * Mostrar los estudiantes matriculados en un curso.
+     */
+    public function students(Course $course)
+    {
+        $this->authorize('viewStudents', $course);
+
+        $students = $course->students()->get();
+
+        return response()->json($students, 200);
+    }
 }
